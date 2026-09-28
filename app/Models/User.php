@@ -5,8 +5,10 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+
 
 class User extends Authenticatable
 {
@@ -20,8 +22,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email',
+        'username',
         'password',
+        'role',
     ];
 
     /**
@@ -34,16 +37,31 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    // Get users cleaning logs 
+    public function cleaningLogs(): HasMany {
+        return $this->hasMany(CleaningLogs::class, 'user_id');
+    }
+
+    // Check if the user is an admin
+    public function isAdmin(): bool {
+        return $this->role === 'admin'; 
+    }
+
+    // Check if the user is a janitor
+    public function isJanitor(): bool {
+        return $this->role === 'janitor'; 
+    }
+
     /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
+    protected function casts(): array{
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
+
+
 }
