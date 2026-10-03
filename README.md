@@ -7,6 +7,42 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Smart Restroom Dashboard
+
+The dashboard at `/` refreshes the latest ESP32 sensor reading every five seconds. It displays the single-IR cumulative pass count, raw TCS34725 red/green/blue/clear channels, optional firmware-classified water state, and raw MQ-135 ADC count with optional firmware-classified state. It does not provide an event-log screen.
+
+### ESP32 endpoint
+
+Send a JSON `POST` to `/api/sensor-data` with an `X-API-KEY` header matching `IOT_API_KEY` in `.env`:
+
+```json
+{
+  "people_count": 27,
+  "cubicle_1_occupied": false,
+  "cubicle_2_occupied": true,
+  "tcs_red": 1420,
+  "tcs_green": 1680,
+  "tcs_blue": 1190,
+  "tcs_clear": 4600,
+  "water_state": "uncalibrated",
+  "mq135_raw": 1380,
+  "mq135_state": "uncalibrated"
+}
+```
+
+Required values are `people_count`, `tcs_red`, `tcs_green`, `tcs_blue`, `tcs_clear`, and `mq135_raw`. Optional `cubicle_1_occupied` and `cubicle_2_occupied` are booleans supplied by the ESP32 (`true` means in use; `false` means available); leave either out until its ultrasonic sensor is ready. Optional `water_state` values are `dry`, `clear_water`, `muddy_water`, or `uncalibrated`; optional `mq135_state` values are `normal`, `elevated`, or `uncalibrated`. Omit either state until its calibration is known. The server stores supplied states and never infers calibration thresholds. The single IR sensor reports cumulative visit detections separately from the two cubicle states. MQ-135 data is shown as a raw analog count, not gas concentration.
+
+Successful posts return `201`, validation errors return `422`, and an absent/incorrect API key returns `401`.
+
+### Local development
+
+```powershell
+php artisan serve --host=0.0.0.0 --port=8000
+npm run dev
+```
+
+Run `php artisan migrate` after pulling code with new migrations. Seed the initial administrator with `php artisan db:seed --class=AdminUserSeeder`; its username and password come from `RMS_ADMIN_USERNAME` and `RMS_ADMIN_PASSWORD` in the ignored `.env` file. Configure MySQL and `IOT_API_KEY` there as well.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
