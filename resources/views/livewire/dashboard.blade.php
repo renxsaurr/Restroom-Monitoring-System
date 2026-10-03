@@ -92,14 +92,14 @@
         </section>
 
         <section class="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4" aria-label="Current restroom conditions">
-            <article class="rounded-[1.6rem] border border-zinc-200 bg-white p-6 shadow-sm sm:p-7">
+            <article class="flex min-h-[18rem] flex-col rounded-[1.6rem] border border-zinc-200 bg-white p-6 shadow-sm sm:p-7">
                 <div class="flex size-12 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-800"><svg viewBox="0 0 24 24" fill="none" class="size-5" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m16 0v-2a4 4 0 0 0-3-3.87M14 3.13a4 4 0 0 1 0 7.75M10 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <p class="mt-6 text-sm font-semibold text-zinc-500">Visits since cleaning</p>
                 <p class="mt-1 font-display text-5xl font-extrabold tracking-tight">{{ $people ?? '—' }} <span class="text-base font-semibold text-zinc-500">visits</span></p>
-                <p class="mt-4 text-sm font-bold {{ is_numeric($people) && $people >= 20 ? 'text-rose-700' : (is_numeric($people) && $people >= 10 ? 'text-amber-700' : (is_numeric($people) ? 'text-emerald-700' : 'text-zinc-500')) }}">{{ is_numeric($people) ? ($people >= 20 ? 'Cleaning recommended' : ($people >= 10 ? 'Check soon' : 'Within normal range')) : 'Waiting for a reading' }}</p>
+                <p class="mt-auto pt-4 text-sm font-bold {{ is_numeric($people) && $people >= 20 ? 'text-rose-700' : (is_numeric($people) && $people >= 10 ? 'text-amber-700' : (is_numeric($people) ? 'text-emerald-700' : 'text-zinc-500')) }}">{{ is_numeric($people) ? ($people >= 20 ? 'Cleaning recommended' : ($people >= 10 ? 'Check soon' : 'Within normal range')) : 'Waiting for a reading' }}</p>
             </article>
 
-            <article class="rounded-[1.6rem] border border-zinc-200 bg-white p-6 shadow-sm sm:p-7">
+            <article class="flex min-h-[18rem] flex-col rounded-[1.6rem] border border-zinc-200 bg-white p-6 shadow-sm sm:p-7">
                 <div class="flex size-12 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-800"><svg viewBox="0 0 24 24" fill="none" class="size-5" aria-hidden="true"><path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16M4 21h16M9 7h.01M15 7h.01M9 11h.01M15 11h.01M9 15h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <p class="mt-6 text-sm font-semibold text-zinc-500">Cubicle availability</p>
                 <div class="mt-4 grid grid-cols-2 gap-3">
@@ -115,21 +115,29 @@
                         </div>
                     @endforeach
                 </div>
-                <p class="mt-4 text-xs leading-5 text-zinc-500">Live status for each cubicle.</p>
+                <p class="mt-auto pt-4 text-xs leading-5 text-zinc-500">Live status for each cubicle.</p>
             </article>
 
-            <article class="rounded-[1.6rem] border border-zinc-200 bg-white p-6 shadow-sm sm:p-7">
+            <article class="flex min-h-[18rem] flex-col rounded-[1.6rem] border border-zinc-200 bg-white p-6 shadow-sm sm:p-7">
                 <div class="flex size-12 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-800"><svg viewBox="0 0 24 24" fill="none" class="size-5" aria-hidden="true"><path d="M12 3.5S5.5 11 5.5 15.2a6.5 6.5 0 1 0 13 0C18.5 11 12 3.5 12 3.5Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <p class="mt-6 text-sm font-semibold text-zinc-500">Floor water</p>
-                <p class="mt-2 font-display text-3xl font-extrabold tracking-tight">{{ $waterLabel }}</p>
-                <p class="mt-4 text-sm font-medium {{ $waterState === 'dry' ? 'text-emerald-700' : (in_array($waterState, ['clear_water', 'muddy_water'], true) ? 'text-amber-800' : 'text-zinc-500') }}">{{ $waterState === 'dry' ? 'Floor looks clear.' : (in_array($waterState, ['clear_water', 'muddy_water'], true) ? 'Please inspect the floor.' : 'Condition will show when set up.') }}</p>
+                @if ($waterState === 'uncalibrated')
+                    <p class="mt-2 font-display text-2xl font-extrabold tracking-tight text-zinc-600">{{ $waterLabel }}</p>
+                @else
+                    <p class="mt-2 inline-flex min-h-12 w-fit max-w-full items-center rounded-full px-4 py-2 text-2xl font-extrabold tracking-tight {{ $waterTone }}">{{ $waterLabel }}</p>
+                @endif
+                <p class="mt-auto pt-4 text-sm font-medium {{ $waterState === 'dry' ? 'text-emerald-700' : (in_array($waterState, ['clear_water', 'muddy_water'], true) ? 'text-amber-800' : 'text-zinc-500') }}">{{ $waterState === 'dry' ? 'Floor looks clear.' : (in_array($waterState, ['clear_water', 'muddy_water'], true) ? 'Please inspect the floor.' : 'Connect the sensor to show this condition.') }}</p>
             </article>
 
-            <article class="rounded-[1.6rem] border border-zinc-200 bg-white p-6 shadow-sm sm:p-7">
+            <article class="flex min-h-[18rem] flex-col rounded-[1.6rem] border border-zinc-200 bg-white p-6 shadow-sm sm:p-7">
                 <div class="flex size-12 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-800"><svg viewBox="0 0 24 24" fill="none" class="size-5" aria-hidden="true"><path d="M12 3v2m0 14v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M3 12h2m14 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <p class="mt-6 text-sm font-semibold text-zinc-500">Air and odor</p>
-                <p class="mt-2 font-display text-3xl font-extrabold tracking-tight">{{ $airLabel }}</p>
-                <p class="mt-4 text-sm font-medium {{ $airState === 'normal' ? 'text-emerald-700' : ($airState === 'elevated' ? 'text-rose-700' : 'text-zinc-500') }}">{{ $airState === 'normal' ? 'No odor alert.' : ($airState === 'elevated' ? 'Please check the restroom.' : 'Condition will show when set up.') }}</p>
+                @if ($airState === 'uncalibrated')
+                    <p class="mt-2 font-display text-2xl font-extrabold tracking-tight text-zinc-600">{{ $airLabel }}</p>
+                @else
+                    <p class="mt-2 inline-flex min-h-12 w-fit max-w-full items-center rounded-full px-4 py-2 text-2xl font-extrabold tracking-tight {{ $airTone }}">{{ $airLabel }}</p>
+                @endif
+                <p class="mt-auto pt-4 text-sm font-medium {{ $airState === 'normal' ? 'text-emerald-700' : ($airState === 'elevated' ? 'text-rose-700' : 'text-zinc-500') }}">{{ $airState === 'normal' ? 'No odor alert.' : ($airState === 'elevated' ? 'Please check the restroom.' : 'Connect the sensor to show this condition.') }}</p>
             </article>
         </section>
 
