@@ -25,6 +25,8 @@
             'elevated' => 'bg-rose-100 text-rose-800',
             default => 'bg-zinc-100 text-zinc-600',
         };
+        $cubicleOne = $reading?->cubicle_1_occupied;
+        $cubicleTwo = $reading?->cubicle_2_occupied;
         $people = $reading?->people_count;
         if (! $fresh) {
             $overallLabel = 'Waiting for an update';
@@ -78,7 +80,7 @@
             <div>
                 <p class="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-zinc-500">Staff overview</p>
                 <h1 class="font-display text-3xl font-extrabold tracking-[-0.04em] sm:text-4xl">How is the restroom?</h1>
-                <p class="mt-2 text-sm text-zinc-600">Current conditions and the number of visits since the last cleaning.</p>
+                <p class="mt-2 text-sm text-zinc-600">Visits, cubicle availability, and current restroom conditions.</p>
             </div>
             <div class="flex flex-col items-start gap-3 sm:items-end">
                 <button type="button" wire:click="$set('showCleaningConfirmation', true)" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-zinc-950 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-zinc-300">
@@ -89,12 +91,31 @@
             </div>
         </section>
 
-        <section class="mb-6 grid gap-4 md:grid-cols-3" aria-label="Current sensor conditions">
+        <section class="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4" aria-label="Current restroom conditions">
             <article class="rounded-[1.6rem] border border-zinc-200 bg-white p-6 shadow-sm sm:p-7">
                 <div class="flex size-12 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-800"><svg viewBox="0 0 24 24" fill="none" class="size-5" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m16 0v-2a4 4 0 0 0-3-3.87M14 3.13a4 4 0 0 1 0 7.75M10 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <p class="mt-6 text-sm font-semibold text-zinc-500">Visits since cleaning</p>
                 <p class="mt-1 font-display text-5xl font-extrabold tracking-tight">{{ $people ?? '—' }} <span class="text-base font-semibold text-zinc-500">visits</span></p>
                 <p class="mt-4 text-sm font-bold {{ is_numeric($people) && $people >= 20 ? 'text-rose-700' : (is_numeric($people) && $people >= 10 ? 'text-amber-700' : (is_numeric($people) ? 'text-emerald-700' : 'text-zinc-500')) }}">{{ is_numeric($people) ? ($people >= 20 ? 'Cleaning recommended' : ($people >= 10 ? 'Check soon' : 'Within normal range')) : 'Waiting for a reading' }}</p>
+            </article>
+
+            <article class="rounded-[1.6rem] border border-zinc-200 bg-white p-6 shadow-sm sm:p-7">
+                <div class="flex size-12 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-800"><svg viewBox="0 0 24 24" fill="none" class="size-5" aria-hidden="true"><path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16M4 21h16M9 7h.01M15 7h.01M9 11h.01M15 11h.01M9 15h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <p class="mt-6 text-sm font-semibold text-zinc-500">Cubicle availability</p>
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    @foreach ([['name' => 'Cubicle 1', 'occupied' => $cubicleOne], ['name' => 'Cubicle 2', 'occupied' => $cubicleTwo]] as $cubicle)
+                        @php
+                            $cubicleLabel = $cubicle['occupied'] === null ? 'Waiting for data' : ($cubicle['occupied'] ? 'In use' : 'Available');
+                            $cubicleTone = $cubicle['occupied'] === null ? 'text-zinc-500' : ($cubicle['occupied'] ? 'text-amber-800' : 'text-emerald-700');
+                            $cubicleDot = $cubicle['occupied'] === null ? 'bg-zinc-400' : ($cubicle['occupied'] ? 'bg-amber-500' : 'bg-emerald-500');
+                        @endphp
+                        <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
+                            <p class="text-xs font-semibold text-zinc-500">{{ $cubicle['name'] }}</p>
+                            <p class="mt-2 flex items-center gap-2 text-sm font-bold {{ $cubicleTone }}"><span class="size-2 shrink-0 rounded-full {{ $cubicleDot }}"></span>{{ $cubicleLabel }}</p>
+                        </div>
+                    @endforeach
+                </div>
+                <p class="mt-4 text-xs leading-5 text-zinc-500">Live status for each cubicle.</p>
             </article>
 
             <article class="rounded-[1.6rem] border border-zinc-200 bg-white p-6 shadow-sm sm:p-7">

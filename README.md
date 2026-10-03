@@ -9,7 +9,7 @@
 
 ## Smart Restroom Dashboard
 
-The dashboard at `/` refreshes the latest ESP32 sensor reading every five seconds. It displays the single-IR cumulative pass count, raw TCS34725 red/green/blue/clear channels, optional firmware-classified water state, and raw MQ-135 ADC count with optional firmware-classified state. It does not provide an event-log screen.
+The dashboard at `/` refreshes the latest ESP32 sensor reading every five seconds. It displays visits since cleaning, the two cubicles' availability, the floor-water state, and the air/odor state. It does not provide an event-log screen.
 
 ### ESP32 endpoint
 
